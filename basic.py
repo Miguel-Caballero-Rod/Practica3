@@ -1,7 +1,17 @@
+'''
+GENERAR ASTEROIDES: niveles de dificultad??
+COLISIONES PELOTA-ASTERIODES
+VIDAS??
+
+'''
+
+
+
 import pygame
 import sys, os
 import socket
 import pickle
+from random import random
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -88,7 +98,12 @@ class Ball():
 class Game():
     def __init__(self):
         self.players = [Player(i) for i in range(2)]
-        self.ball = Ball([-2,3])
+        i = random()
+        if i<0.5:
+            j = 1
+        else:
+            j=-1
+        self.ball = Ball([2*j,3])
         self.score = [0,0]
         self.running = True
 
