@@ -2,10 +2,7 @@
 GENERAR ASTEROIDES: niveles de dificultad??
 COLISIONES PELOTA-ASTERIODES
 VIDAS??
-
 '''
-
-
 
 import pygame
 import sys, os
@@ -36,7 +33,7 @@ DELTA = 30
 
 SIDES = ["left", "right"]
 
-NUM_ASTEROIDS = 10
+NUM_ASTEROIDS = 20
 HEIGHT_ASTEROID = 15
 WIDTH_ASTEROID = 15
 
@@ -172,9 +169,8 @@ class Game():
         elif pos[Y]<0:
             self.ball.bounce(Y)
 
-
     def __str__(self):
-        return f"G<{self.players[RIGHT_PLAYER]}:{self.players[LEFT_PLAYER]}:{self.ball}>"
+        return f"G<{self.players[RIGHT_PLAYER]}:{self.players[LEFT_PLAYER]}:{self.ball}:{self.list_asteroids}>"
 
 
 class Paddle(pygame.sprite.Sprite):
@@ -211,37 +207,44 @@ class BallSprite(pygame.sprite.Sprite):
     def update(self):
         pos = self.ball.get_pos()
         self.rect.centerx, self.rect.centery = pos
-'''
+
 class AsteroidSprite(pygame.sprite.Sprite):
-    def __init__(self, list_asteroids):
+    def __init__(self, list_asteroids, pos):
         super().__init__()
         self.list_asteroids = list_asteroids
-        for i in range(len(self.list_asteroids.list_pos)):
-            self.image = pygame.Surface((WIDTH_ASTEROID, HEIGHT_ASTEROID))
-            self.image.fill(BLACK)
-            self.image.set_colorkey(BLACK)
-            pygame.draw.rect(self.image, BALL_COLOR, [0, 0, WIDTH_ASTEROID, HEIGHT_ASTEROID])
-            self.rect = self.image.get_rect()
+        self.pos = pos
+        self.image = pygame.Surface([WIDTH_ASTEROID, HEIGHT_ASTEROID])
+        self.image.fill(BLACK)
+        self.image.set_colorkey(BLACK)
+        pygame.draw.rect(self.image, WHITE, [0,0,WIDTH_ASTEROID, HEIGHT_ASTEROID])
+        self.rect = self.image.get_rect()
         self.update()
-    
+
     def update(self):
-        for i in range(len(self.list_asteroids.list_pos)):
-            pos = self.list_asteroids.get_pos()[i]
-            self.rect.centerx, self.rect.centery = pos
-'''
+        if self.pos in self.list_asteroids.get_pos():
+            self.rect.centerx, self.rect.centery = self.pos
+        else:
+            self.rect.centerx, self.rect.centery = 0,0
+
+    def __str__(self):
+        return f"S<{self.player}>"
+
 
 class Display():
     def __init__(self, game):
         self.game = game
         self.paddles = [Paddle(self.game.get_player(i)) for i in range(2)]
         self.ball = BallSprite(self.game.get_ball())
-        # self.ball = AsteroidSprite(self.game.get_pos_asteroids())
+        self.l_ast = self.game.get_pos_asteroids().get_pos()
+        self.list_asteroids = [[AsteroidSprite(self.game.get_pos_asteroids(), pos)] for pos in self.l_ast]
         self.all_sprites = pygame.sprite.Group()
         self.paddle_group = pygame.sprite.Group()
         for paddle  in self.paddles:
             self.all_sprites.add(paddle)
             self.paddle_group.add(paddle)
         self.all_sprites.add(self.ball)
+        for asteroid  in self.list_asteroids:
+            self.all_sprites.add(asteroid[0])
 
         self.screen = pygame.display.set_mode(SIZE)
         self.clock =  pygame.time.Clock()  #FPS
@@ -264,14 +267,15 @@ class Display():
                     self.game.moveRight(RIGHT_PLAYER)
         if pygame.sprite.spritecollide(self.ball, self.paddle_group, False):
             self.game.get_ball().collide_player()
-        '''
-        for pos in self.list_asteroids:
-            if pygame.sprite.spritecollide(self.ball, self.paddle_group, False):
+        for asteroid in self.list_asteroids:
+            if pygame.sprite.spritecollide(self.ball, asteroid, False):
                 self.game.get_ball().collide_player()
-        '''
+                self.list_asteroids.remove(asteroid)
+                self.all_sprites.remove(asteroid[0])
+        if self.list_asteroids == []:
+            # MENSAJE VICTORIA
+            self.game.stop()
         self.all_sprites.update()
-
-
 
     def refresh(self):
         self.screen.blit(self.background, (0, 0))
