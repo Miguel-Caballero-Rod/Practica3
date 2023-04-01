@@ -167,7 +167,7 @@ class Game():
             self.ball.bounce(X)
         if pos[Y]>SIZE[Y]:
             self.ball.bounce(Y)
-            if pos[X]>SIZE[Y]//2:
+            if pos[X]>SIZE[X]//2:
                 if self.vidas[0]==1:
                     self.stop()
                 else:
