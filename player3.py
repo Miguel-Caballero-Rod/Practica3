@@ -271,7 +271,7 @@ class Display():
         self.clock.tick(FPS)
 
     @staticmethod
-    def quit():(side, game.get_info())
+    def quit():
         pygame.quit()
 
 
