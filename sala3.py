@@ -134,13 +134,13 @@ class Game():
         return self.ball[0]
 
     def get_vidas(self):
-        return self.vidas
+        return list(self.vidas)
     
     def get_pos_asteroids(self):
         return self.list_asteroids[0]
 
     def get_loser(self):
-        return self.loser
+        return self.loser.value
     
     def is_running(self):
         return self.running.value == 1
@@ -184,7 +184,7 @@ class Game():
             'pos_left_player': self.players[LEFT_PLAYER].get_pos(),
             'pos_right_player': self.players[RIGHT_PLAYER].get_pos(),
             'pos_ball': self.ball[0].get_pos(),
-            'vidas': Manager().list(self.vidas),
+            'vidas': list(self.vidas),
             'loser': self.get_loser()   ,
             # 'list_asteroids': list(self.list_asteroids[0].get_pos()),
             'is_running': self.running.value == 1
