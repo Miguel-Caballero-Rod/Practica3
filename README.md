@@ -1,5 +1,7 @@
 # Práctica 3 de Programación Paralela: Juego Distribuido
 
+#### Trabajo realizado por Manuel Pablo Bejarano Galeano, Miguel Caballero Rodríguez y Pedro Corral Ortiz-Coronado
+
 ## Descripción básica del juego:
 Hay dos jugadores que pueden desplazar horizontalmente sus plataformas a lo largo de la mitad correspondiente de la pantalla, y deben hacer rebotar la pelota sin que toque el borde inferior con el objetivo de destruir todos los asteroides sin que se queden sin vidas. Un jugador pierde una vida cuando la pelota toca el borde inferior de la pantalla en la mitad en la que se encuentra el jugador. Para destruir los asteroides debe colisionar la pelota con ellos, y cualquier choque de la pelota con uno de los bordes o los asteroides hará que rebote cambiando la dirección de su movimiento.
 
