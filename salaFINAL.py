@@ -18,7 +18,7 @@ WIDTH_ASTEROID = 15
 PLAYER_HEIGHT = 10
 PLAYER_WIDTH = 60
 
-
+# Función para generar posiciones aleatorias de los asteroides a través de la librería random
 def generate_aseroids(num_ast,manager):
     list_asteroids = []
     for i in range(num_ast):
@@ -28,6 +28,7 @@ def generate_aseroids(num_ast,manager):
         list_asteroids.append(ast)
     return list_asteroids
 
+# Clase del jugador, análoga a la del juego del ping-pong
 class Player():
     def __init__(self, side):
         self.side = side
@@ -41,7 +42,8 @@ class Player():
 
     def get_side(self):
         return self.side
-
+    
+    # En vez de moverse verticalmente lo hace horizontalmente
     def moveRight(self):
         self.pos[X] += DELTA
         if self.side == LEFT_PLAYER:
@@ -63,6 +65,7 @@ class Player():
     def __str__(self):
         return f"P<{SIDESSTR[self.side]}, {self.pos}>"
 
+# Clase de l pelota, análoga a la del juego del ping-pong
 class Ball():
     def __init__(self, velocity):
         self.pos=[ SIZE[X]//2, SIZE[Y]//2 ]
@@ -82,7 +85,8 @@ class Ball():
         self.bounce(Y)
         for i in range(3):
             self.update()
-
+    
+    # Si colisiona con un asteroide rebota verticalmente
     def collide_asteroid(self):
         self.bounce(Y)
         for i in range(3):
@@ -90,7 +94,8 @@ class Ball():
 
     def __str__(self):
         return f"B<{self.pos, self.velocity}>"
-    
+
+# Clase que guarda la lista de posiciones de los asteroides que quedan en pantalla
 class List_Asteroids():
     def __init__(self, list_pos):
         self.list_pos = list_pos
@@ -118,6 +123,7 @@ class Game():
         self.vidas = manager.list([3,3])
         self.loser = Value('i', -1)
         self.running = Value('i', 1) # 1 running
+        # inicializa aleatoriamente en una Manager().list() para poder ser compartida
         self.list_asteroids = manager.list([List_Asteroids(generate_aseroids(NUM_ASTEROIDS,manager))])
         self.asteroids_left=Value('i', NUM_ASTEROIDS)
         self.lock = Lock()
@@ -232,11 +238,13 @@ def player(side, conn, game):
                 elif command == "collide_player":
                     game.ball_collide_player()
                 elif "destroy_asteroid" in command:
+                    # Para destruir asteroides y rebotar solo se hace caso a los comandos de uno de los dos jugadors, ya que sino se ejecuta dos veces
                     if side == 0:
                         asteroid=list(map(float,command[18:-1].split(',')))
                         game.ball_collide_asteroid()
                         game.destroy_asteroid(asteroid)
                         game.list_asteroids[0].list_pos.remove(asteroid)
+                        #al colisionar se elimina el asteroide de la lista
                         if game.asteroids_left.value==0:
                             game.loser.value = 2
                             game.stop()
