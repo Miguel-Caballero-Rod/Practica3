@@ -37,6 +37,7 @@ NUM_ASTEROIDS = 20
 HEIGHT_ASTEROID = 15
 WIDTH_ASTEROID = 15
 
+# Función para generar posiciones aleatorias de los asteroides a través de la librería random
 def generate_aseroids(num_ast):
     list_asteroids = []
     for i in range(num_ast):
@@ -46,6 +47,7 @@ def generate_aseroids(num_ast):
         list_asteroids.append(ast)
     return list_asteroids
 
+# Clase del jugador, análoga a la del juego del ping-pong
 class Player():
     def __init__(self, side):
         self.side = side
@@ -60,6 +62,7 @@ class Player():
     def get_side(self):
         return self.side
 
+    # En vez de moverse de arriba a abajo se mueve hacia los lados, sin poder sobrepasar la mitad correspondiente de la pantalla
     def moveRight(self):
         self.pos[X] += DELTA
         if self.side == LEFT_PLAYER:
@@ -101,6 +104,7 @@ class Ball():
         for i in range(3):
             self.update()
             
+    # Si colisiona con un asteroide rebota en el eje Y        
     def collide_asteroid(self):
         self.bounce(Y)
         for i in range(3):
@@ -108,7 +112,8 @@ class Ball():
 
     def __str__(self):
         return f"B<{self.pos}>"
-    
+
+# Clase que guarda la lista de posiciones de los asteroides que quedan en pantalla
 class List_Asteroids():
     def __init__(self, list_pos):
         self.list_pos = list_pos
@@ -135,7 +140,7 @@ class Game():
         self.vidas = [3,3]
         self.loser=-1
         self.running = True
-        self.list_asteroids = List_Asteroids(generate_aseroids(NUM_ASTEROIDS))
+        self.list_asteroids = List_Asteroids(generate_aseroids(NUM_ASTEROIDS))  # Inicializa aleatorio
 
     def get_player(self, side):
         return self.players[side]
@@ -228,7 +233,7 @@ class AsteroidSprite(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
         self.update()
 
-    def update(self):
+    def update(self):  # sólo dibujamos en pantalla los asteroides que siguen en la lista de asteroides no colisionados
         if self.pos in self.list_asteroids.get_pos():
             self.rect.centerx, self.rect.centery = self.pos
         else:
@@ -244,6 +249,7 @@ class Display():
         self.paddles = [Paddle(self.game.get_player(i)) for i in range(2)]
         self.ball = BallSprite(self.game.get_ball())
         self.l_ast = self.game.get_pos_asteroids().get_pos()
+        #inicializamos como lista de listas para luego analizar las colisiones con la función spritecollide
         self.list_asteroids = [[AsteroidSprite(self.game.get_pos_asteroids(), pos)] for pos in self.l_ast]
         self.all_sprites = pygame.sprite.Group()
         self.paddle_group = pygame.sprite.Group()
@@ -277,6 +283,7 @@ class Display():
             self.game.get_ball().collide_player()
         for asteroid in self.list_asteroids:
             if pygame.sprite.spritecollide(self.ball, asteroid, False):
+                # Si colisiona con algún asteroide, ese se elimina de la lista de sprites y de la lista de asteroides restantes
                 self.game.get_ball().collide_player()
                 self.list_asteroids.remove(asteroid)
                 self.all_sprites.remove(asteroid[0])
@@ -298,6 +305,7 @@ class Display():
             pygame.display.flip()
         else:
             self.screen.blit(self.background, (0, 0))
+            # Cuando acaba la partida, deendiendo del resultado, mostramos la imagen de victoria o derrota orrespondiente con pygame.image.load
             if loser !=2:
                 game_over=pygame.image.load('game_over.png')
                 self.screen.blit(game_over,(173,10))           
